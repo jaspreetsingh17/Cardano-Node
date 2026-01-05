@@ -1,0 +1,32 @@
+[Unit]
+Description=Cardano Node
+Documentation=https://cardano.org
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=cardano
+Group=cardano
+
+Environment="CARDANO_NODE_SOCKET_PATH=/var/lib/cardano/socket/node.socket"
+
+ExecStart=/usr/local/bin/cardano-node run \
+    --topology /etc/cardano/mainnet-topology.json \
+    --database-path /var/lib/cardano/db \
+    --socket-path /var/lib/cardano/socket/node.socket \
+    --host-addr 0.0.0.0 \
+    --port 3001 \
+    --config /etc/cardano/mainnet-config.json
+
+Restart=on-failure
+RestartSec=10
+
+LimitNOFILE=65535
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cardano-node
+
+[Install]
+WantedBy=multi-user.target
